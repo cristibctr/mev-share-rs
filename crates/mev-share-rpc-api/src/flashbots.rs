@@ -69,7 +69,7 @@ pub trait FlashbotsApiClient {
     ///
     /// * `block_number` - A recent block number, in order to prevent replay attacks. Must be within
     ///   20 blocks of the current chain tip.
-    async fn get_user_stats(&self, block_number: U64) -> Result<UserStats, jsonrpsee::core::Error>;
+    async fn get_user_stats(&self, block_number: U64) -> Result<UserStats, jsonrpsee::core::ClientError>;
 
     /// Returns stats for a single bundle.
     ///
@@ -85,7 +85,7 @@ pub trait FlashbotsApiClient {
         &self,
         bundle_hash: H256,
         block_number: U64,
-    ) -> Result<BundleStats, jsonrpsee::core::Error>;
+    ) -> Result<BundleStats, jsonrpsee::core::ClientError>;
 }
 
 #[cfg(feature = "client")]
@@ -95,7 +95,7 @@ where
     T: rpc::FlashbotsApiClient + Sync,
 {
     /// See [`FlashbotsApiClient::get_user_stats`]
-    async fn get_user_stats(&self, block_number: U64) -> Result<UserStats, jsonrpsee::core::Error> {
+    async fn get_user_stats(&self, block_number: U64) -> Result<UserStats, jsonrpsee::core::ClientError> {
         self.get_user_stats(rpc::GetUserStatsRequest { block_number }).await
     }
 
@@ -104,7 +104,7 @@ where
         &self,
         bundle_hash: H256,
         block_number: U64,
-    ) -> Result<BundleStats, jsonrpsee::core::Error> {
+    ) -> Result<BundleStats, jsonrpsee::core::ClientError> {
         self.get_bundle_stats(rpc::GetBundleStatsRequest { bundle_hash, block_number }).await
     }
 }
@@ -125,7 +125,7 @@ mod tests {
     async fn assert_flashbots_api_box() {
         let fb_signer = LocalWallet::new(&mut thread_rng());
         let http = HttpClientBuilder::default()
-            .set_middleware(
+            .set_http_middleware(
                 tower::ServiceBuilder::new()
                     .map_err(transport::Error::Http)
                     .layer(FlashbotsSignerLayer::new(fb_signer.clone())),

@@ -45,7 +45,7 @@ pub trait MevApiClient {
     async fn send_bundle(
         &self,
         request: SendBundleRequest,
-    ) -> Result<SendBundleResponse, jsonrpsee::core::Error>;
+    ) -> Result<SendBundleResponse, jsonrpsee::core::ClientError>;
 
     /// Similar to `mev_sendBundle` but instead of submitting a bundle to the relay, it returns a
     /// simulation result. Only fully matched bundles can be simulated.
@@ -53,7 +53,7 @@ pub trait MevApiClient {
         &self,
         bundle: SendBundleRequest,
         sim_overrides: SimBundleOverrides,
-    ) -> Result<SimBundleResponse, jsonrpsee::core::Error>;
+    ) -> Result<SimBundleResponse, jsonrpsee::core::ClientError>;
 }
 
 #[cfg(feature = "client")]
@@ -65,7 +65,7 @@ where
     async fn send_bundle(
         &self,
         request: SendBundleRequest,
-    ) -> Result<SendBundleResponse, jsonrpsee::core::Error> {
+    ) -> Result<SendBundleResponse, jsonrpsee::core::ClientError> {
         rpc::MevApiClient::send_bundle(self, request).await
     }
 
@@ -73,7 +73,7 @@ where
         &self,
         bundle: SendBundleRequest,
         sim_overrides: SimBundleOverrides,
-    ) -> Result<SimBundleResponse, jsonrpsee::core::Error> {
+    ) -> Result<SimBundleResponse, jsonrpsee::core::ClientError> {
         rpc::MevApiClient::sim_bundle(self, bundle, sim_overrides).await
     }
 }
@@ -94,7 +94,7 @@ mod tests {
     async fn assert_mev_api_box() {
         let fb_signer = LocalWallet::new(&mut thread_rng());
         let http = HttpClientBuilder::default()
-            .set_middleware(
+            .set_http_middleware(
                 tower::ServiceBuilder::new()
                     .map_err(transport::Error::Http)
                     .layer(FlashbotsSignerLayer::new(fb_signer.clone())),

@@ -12,7 +12,7 @@ use ethers_signers::Signer;
 use futures_util::future::BoxFuture;
 
 use http::{header::HeaderValue, HeaderName, Request};
-use hyper::Body;
+use reqwest::Body;
 
 use tower::{Layer, Service};
 
@@ -94,11 +94,11 @@ where
 
         // otherwise, sign the request body and add the signature to the header
         Box::pin(async move {
-            let body_bytes = hyper::body::to_bytes(body).await?;
+            let body_bytes = body.as_bytes().unwrap().to_vec();
 
             // sign request body and insert header
             let signature = signer
-                .sign_message(format!("0x{:x}", H256::from(keccak256(body_bytes.as_ref()))))
+                .sign_message(format!("0x{:x}", H256::from(keccak256(&body_bytes[..]))))
                 .await?;
 
             let header_val =
@@ -118,7 +118,7 @@ mod tests {
     use ethers_core::rand::thread_rng;
     use ethers_signers::LocalWallet;
     use http::Response;
-    use hyper::Body;
+    use reqwest::Body;
     use std::convert::Infallible;
     use tower::{service_fn, ServiceExt};
 

@@ -581,7 +581,7 @@ impl SimulatedBundleError {
     }
 
     /// Attempts to downcast the error to a jsonrpsee error.
-    pub fn as_rpc_error(&self) -> Option<&jsonrpsee::core::Error> {
+    pub fn as_rpc_error(&self) -> Option<&jsonrpsee::core::ClientError> {
         self.inner.error.downcast_ref()
     }
 }

@@ -5,7 +5,8 @@ use http::{
     header::{CACHE_CONTROL, CONTENT_TYPE},
     StatusCode,
 };
-use hyper::{Body, Request, Response};
+use reqwest::Body;
+use hyper::{Request, Response};
 use serde::Serialize;
 use std::{
     convert::Infallible,

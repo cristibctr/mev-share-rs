@@ -9,7 +9,7 @@ use std::{fmt, fmt::Formatter, future::Future, pin::Pin, sync::Arc};
 pub struct RpcSimulator<Client> {
     client: Client,
     is_err_recoverable:
-        Arc<dyn Fn(&jsonrpsee::core::Error) -> bool + Unpin + Send + Sync + 'static>,
+        Arc<dyn Fn(&jsonrpsee::core::ClientError) -> bool + Unpin + Send + Sync + 'static>,
 }
 
 impl<Client> RpcSimulator<Client> {
@@ -23,7 +23,7 @@ impl<Client> RpcSimulator<Client> {
     /// By default the error is recoverable if it contains the "nonce too low" error.
     pub fn with_recoverable_fn<F>(client: Client, f: F) -> Self
     where
-        F: Fn(&jsonrpsee::core::Error) -> bool + Unpin + Send + Sync + 'static,
+        F: Fn(&jsonrpsee::core::ClientError) -> bool + Unpin + Send + Sync + 'static,
     {
         Self { client, is_err_recoverable: Arc::new(f) }
     }
@@ -68,6 +68,6 @@ impl<C> fmt::Debug for RpcSimulator<C> {
 /// whether the error message contains a nonce too low error
 ///
 /// This is the default recoverable error for RPC simulator
-pub(crate) fn is_nonce_too_low(err: &jsonrpsee::core::Error) -> bool {
+pub(crate) fn is_nonce_too_low(err: &jsonrpsee::core::ClientError) -> bool {
     err.to_string().contains("nonce too low")
 }

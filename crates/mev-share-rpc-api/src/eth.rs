@@ -87,26 +87,26 @@ pub trait EthBundleApiClient {
     async fn send_bundle(
         &self,
         bundle: EthSendBundle,
-    ) -> Result<EthBundleHash, jsonrpsee::core::Error>;
+    ) -> Result<EthBundleHash, jsonrpsee::core::ClientError>;
 
     /// `eth_callBundle` can be used to simulate a bundle against a specific block number, including
     /// simulating a bundle at the top of the next block.
     async fn call_bundle(
         &self,
         request: EthCallBundleResponse,
-    ) -> Result<EthCallBundleTransactionResult, jsonrpsee::core::Error>;
+    ) -> Result<EthCallBundleTransactionResult, jsonrpsee::core::ClientError>;
 
     /// `eth_cancelBundle` is used to prevent a submitted bundle from being included on-chain. See [bundle cancellations](https://docs.flashbots.net/flashbots-auction/searchers/advanced/bundle-cancellations) for more information.
     async fn cancel_bundle(
         &self,
         request: CancelBundleRequest,
-    ) -> Result<(), jsonrpsee::core::Error>;
+    ) -> Result<(), jsonrpsee::core::ClientError>;
 
     /// `eth_sendPrivateTransaction` is used to send a single transaction to Flashbots. Flashbots will attempt to build a block including the transaction for the next 25 blocks. See [Private Transactions](https://docs.flashbots.net/flashbots-protect/additional-documentation/eth-sendPrivateTransaction) for more info.
     async fn send_private_transaction(
         &self,
         request: PrivateTransactionRequest,
-    ) -> Result<H256, jsonrpsee::core::Error>;
+    ) -> Result<H256, jsonrpsee::core::ClientError>;
 
     /// The `eth_sendPrivateRawTransaction` method can be used to send private transactions to the
     /// RPC endpoint. Private transactions are protected from frontrunning and kept private until
@@ -115,7 +115,7 @@ pub trait EthBundleApiClient {
     async fn send_private_raw_transaction(
         &self,
         bytes: Bytes,
-    ) -> Result<H256, jsonrpsee::core::Error>;
+    ) -> Result<H256, jsonrpsee::core::ClientError>;
 
     /// The `eth_cancelPrivateTransaction` method stops private transactions from being submitted
     /// for future blocks.
@@ -125,7 +125,7 @@ pub trait EthBundleApiClient {
     async fn cancel_private_transaction(
         &self,
         request: CancelPrivateTransactionRequest,
-    ) -> Result<bool, jsonrpsee::core::Error>;
+    ) -> Result<bool, jsonrpsee::core::ClientError>;
 }
 
 #[cfg(feature = "client")]
@@ -137,42 +137,42 @@ where
     async fn send_bundle(
         &self,
         bundle: EthSendBundle,
-    ) -> Result<EthBundleHash, jsonrpsee::core::Error> {
+    ) -> Result<EthBundleHash, jsonrpsee::core::ClientError> {
         rpc::EthBundleApiClient::send_bundle(self, bundle).await
     }
 
     async fn call_bundle(
         &self,
         request: EthCallBundleResponse,
-    ) -> Result<EthCallBundleTransactionResult, jsonrpsee::core::Error> {
+    ) -> Result<EthCallBundleTransactionResult, jsonrpsee::core::ClientError> {
         rpc::EthBundleApiClient::call_bundle(self, request).await
     }
 
     async fn cancel_bundle(
         &self,
         request: CancelBundleRequest,
-    ) -> Result<(), jsonrpsee::core::Error> {
+    ) -> Result<(), jsonrpsee::core::ClientError> {
         rpc::EthBundleApiClient::cancel_bundle(self, request).await
     }
 
     async fn send_private_transaction(
         &self,
         request: PrivateTransactionRequest,
-    ) -> Result<H256, jsonrpsee::core::Error> {
+    ) -> Result<H256, jsonrpsee::core::ClientError> {
         rpc::EthBundleApiClient::send_private_transaction(self, request).await
     }
 
     async fn send_private_raw_transaction(
         &self,
         bytes: Bytes,
-    ) -> Result<H256, jsonrpsee::core::Error> {
+    ) -> Result<H256, jsonrpsee::core::ClientError> {
         rpc::EthBundleApiClient::send_private_raw_transaction(self, bytes).await
     }
 
     async fn cancel_private_transaction(
         &self,
         request: CancelPrivateTransactionRequest,
-    ) -> Result<bool, jsonrpsee::core::Error> {
+    ) -> Result<bool, jsonrpsee::core::ClientError> {
         rpc::EthBundleApiClient::cancel_private_transaction(self, request).await
     }
 }
